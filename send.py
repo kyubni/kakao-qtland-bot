@@ -22,17 +22,20 @@ def refresh_access_token():
     r.raise_for_status()
     return r.json()["access_token"]
 
-def send_image_to_me(access_token: str, image_url: str, link_url: str):
+def send_image_to_me(access_token: str, image_url: str):
     headers = {"Authorization": f"Bearer {access_token}"}
     url = f"{KAPI}/v2/api/talk/memo/default/send"
 
     template = {
         "object_type": "feed",
         "content": {
-            "title": "오늘의 묵상",
+            "title": "",  # 제목 제거
             "image_url": image_url,
-            "link": {"web_url": link_url, "mobile_web_url": link_url},
-        },
+            "link": {
+                "web_url": image_url,
+                "mobile_web_url": image_url
+            }
+        }
     }
 
     data = {"template_object": json.dumps(template, ensure_ascii=False)}
@@ -43,11 +46,9 @@ def send_image_to_me(access_token: str, image_url: str, link_url: str):
 def main():
     ymd = today_kst()
     image_url = f"https://www.qtland.com/data/meditation/A{ymd}.jpg"
-    link_url = "https://www.qtland.com/quiet/quiet.php"
 
     access_token = refresh_access_token()
-    send_image_to_me(access_token, image_url, link_url)
+    send_image_to_me(access_token, image_url)
 
 if __name__ == "__main__":
     main()
-
